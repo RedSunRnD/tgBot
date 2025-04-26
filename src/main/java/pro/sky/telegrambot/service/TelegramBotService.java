@@ -39,11 +39,7 @@ public class TelegramBotService {
 
             LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
-            NotificationTask task = new NotificationTask();
-            task.setChatId(chatId);
-            task.setDateTime(dateTime);
-            task.setTextMessage(textMessage);
-            task.setDone(false);
+            NotificationTask task = new NotificationTask(chatId, dateTime, textMessage, false);
 
             notificationTaskRepository.save(task);
             logger.info("Notification created successfully for chatId={} with dateTime={}", chatId, dateTime);

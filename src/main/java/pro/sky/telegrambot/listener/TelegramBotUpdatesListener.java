@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.command.BotCommand;
 import pro.sky.telegrambot.service.TelegramBotService;
 
 import javax.annotation.PostConstruct;
@@ -38,28 +39,29 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Message message = update.message();
             if (message != null && message.text() != null) {
                 long chatId = message.chat().id();
-                String messageText = message.text();
+                String messageText = message.text().trim();
 
-                if ("/start".equals(messageText)) {
-                    String welcomeText =    "Привет! Добро пожаловать!\n" +
-                                            "Чтобы создать напоминание, отправьте сообщение в формате:\n" +
-                                            "DD.MM.YYYY HH:mm текст_сообщения";
-                    telegramBot.execute(new SendMessage(chatId, welcomeText));
+                BotCommand command = BotCommand.fromString(messageText);
+                if (command != null) {
+                    command.execute(chatId, messageText, telegramBot);
                 } else {
-                    if (telegramBotService.createNotification(message.text(), chatId)) {
-                        String confirmationText = "Напоминание создано";
-                        telegramBot.execute(new SendMessage(chatId, confirmationText));
-                        logger.info("Notification created successfully for chatId={}", chatId);
+                    if (telegramBotService.createNotification(messageText, chatId)) {
+                        sendResponse(chatId, "Напоминание создано!");
                     } else {
-                        logger.warn("Invalid message format received from chatId={}", chatId);
-                        String errorText = "Неверный формат. Попробуйте такой: ДД.ММ.ГГГГ Текст напоминания";
-                        telegramBot.execute(new SendMessage(chatId, errorText));
+                        sendResponse(chatId, """
+                                Неверный формат.
+                                Используйте: DD.MM.YYYY HH:mm текст_сообщения
+                                """);
                     }
                 }
             }
 
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    private void sendResponse(long chatId, String messageText) {
+        telegramBot.execute(new SendMessage(chatId, messageText));
     }
 
 }

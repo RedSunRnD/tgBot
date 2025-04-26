@@ -1,11 +1,18 @@
 package pro.sky.telegrambot.model;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "notification_task")
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class NotificationTask {
 
     @Id
@@ -24,73 +31,10 @@ public class NotificationTask {
     @Column(name = "text_message", nullable = false)
     private String textMessage;
 
-    public NotificationTask() {
-
-    }
-
-    public NotificationTask(long id, long chatId, LocalDateTime dateTime, boolean isDone, String textMessage) {
+    public NotificationTask(long chatId, LocalDateTime dateTime, String textMessage, boolean isDone) {
         this.chatId = chatId;
         this.dateTime = dateTime;
+        this.textMessage = textMessage;
         this.isDone = isDone;
-        this.textMessage = textMessage;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public long getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
-    }
-
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public boolean isDone() {
-        return isDone;
-    }
-
-    public void setDone(boolean done) {
-        isDone = done;
-    }
-
-    public String getTextMessage() {
-        return textMessage;
-    }
-
-    public void setTextMessage(String textMessage) {
-        this.textMessage = textMessage;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        NotificationTask that = (NotificationTask) o;
-        return id == that.id && chatId == that.chatId && isDone == that.isDone && Objects.equals(dateTime, that.dateTime) && Objects.equals(textMessage, that.textMessage);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, chatId, dateTime, isDone, textMessage);
-    }
-
-    @Override
-    public String toString() {
-        return "NotificationTask{" +
-                "id=" + id +
-                ", chatId=" + chatId +
-                ", dateTime=" + dateTime +
-                ", isDone=" + isDone +
-                ", textMessage='" + textMessage + '\'' +
-                '}';
     }
 }
